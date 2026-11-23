@@ -88,7 +88,7 @@ core/tests/           pytest: 28 tests, incl. the end-to-end flow and validator 
 functions/            intake-api and on-object-created (OCI Functions, Python)
 validator/            container image for validation jobs
 pipeline/             Nextflow variant calling + tools image + OKE manifests
-infra/                OpenTofu/Terraform for everything above
+infra/                Terraform for everything above
 scripts/              deploy, synthetic test data, lab upload client, pipeline runner
 ```
 
@@ -107,14 +107,18 @@ that isn't in the sample sheet. The service must catch both.
 
 ### 1. Deploy to OCI
 
-Prerequisites: an OCI account, the OCI CLI configured (`oci setup config`), OpenTofu or
-Terraform, Docker, and a Docker login to OCIR
+Prerequisites: an OCI account, the OCI CLI configured (`oci setup config`), Terraform 1.12+
+(the OCI state backend is Terraform-only), Docker, and a Docker login to OCIR
 (`docker login uk-london-1.ocir.io -u '<namespace>/<username>'`, using an Auth Token as the password).
 
 ```bash
 cp infra/terraform.tfvars.example infra/terraform.tfvars   # fill in OCIDs, e-mail, api_key
+cp infra/backend.hcl.example infra/backend.hcl             # namespace and region for state
+# once: create the private, versioned state bucket (command in backend.hcl.example)
 ./scripts/deploy.sh
 ```
+
+Terraform state is kept in that bucket, not on your machine, and is locked during each run.
 
 The first apply builds the network, bucket, tables, registry and IAM. The script then pushes
 the images, and a second apply creates the functions, the events rule and the API. Confirm the
@@ -160,7 +164,7 @@ nextflow run pipeline/main.nf -profile local --container pipeline-tools:local \
 
 ### Clean up
 
-`tofu -chdir=infra destroy`. Or keep the cheap parts and set `enable_oke = false`.
+`terraform -chdir=infra destroy` (the state bucket is outside the stack and survives it). Or keep the cheap parts and set `enable_oke = false`.
 
 ## Cost
 

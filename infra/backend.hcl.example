@@ -1,0 +1,9 @@
+# Copy to backend.hcl (git-ignored) and fill in, then:
+#   terraform init -backend-config=backend.hcl
+#
+# Create the state bucket once, outside Terraform, so `terraform destroy` can never
+# delete it. Versioning keeps every previous state for recovery:
+#   oci os bucket create --name genome-intake-tfstate --compartment-id <compartment_ocid> \
+#     --public-access-type NoPublicAccess --versioning Enabled
+namespace = "<object storage namespace>" # oci os ns get
+region    = "uk-london-1"

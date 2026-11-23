@@ -24,10 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: opentofu/setup-opentofu@v1
-      - run: tofu fmt -check -recursive
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.8"
+          terraform_wrapper: false
+      - run: terraform fmt -check -recursive
         working-directory: infra
-      - run: tofu init -backend=false && tofu validate
+      - run: terraform init -backend=false && terraform validate
         working-directory: infra
 
   images:

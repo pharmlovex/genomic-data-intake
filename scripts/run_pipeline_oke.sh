@@ -4,13 +4,13 @@
 #   ./scripts/run_pipeline_oke.sh <batch_id> s3://<bucket>/reference/reference.fa
 #
 # One-off setup (after `enable_oke = true` and an apply):
-#   oci ce cluster create-kubeconfig --cluster-id $(tofu -chdir=infra output -raw oke_cluster_id) --file ~/.kube/config
+#   oci ce cluster create-kubeconfig --cluster-id $(terraform -chdir=infra output -raw oke_cluster_id) --file ~/.kube/config
 #   kubectl apply -f pipeline/k8s/setup.yaml
 #   kubectl -n genomics create secret generic oci-s3-credentials \
 #     --from-literal=AWS_ACCESS_KEY_ID=<customer secret key id> --from-literal=AWS_SECRET_ACCESS_KEY=<secret>
 set -euo pipefail
 cd "$(dirname "$0")/.."
-TF=${TF:-$(command -v terraform || command -v tofu)}
+TF=${TF:-terraform}
 
 export BATCH_ID=${1:?batch id}
 export REFERENCE=${2:?s3:// path to reference FASTA}

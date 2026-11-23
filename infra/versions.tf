@@ -1,5 +1,16 @@
 terraform {
-  required_version = ">= 1.6"
+  # 1.12 added the native "oci" state backend.
+  required_version = ">= 1.12"
+
+  # State lives in a private, versioned Object Storage bucket created outside this
+  # stack (see backend.hcl.example). Namespace and region come from backend.hcl:
+  #   terraform init -backend-config=backend.hcl
+  backend "oci" {
+    bucket              = "genome-intake-tfstate"
+    key                 = "genome-intake/terraform.tfstate"
+    config_file_profile = "DEFAULT"
+  }
+
   required_providers {
     oci = {
       source  = "oracle/oci"

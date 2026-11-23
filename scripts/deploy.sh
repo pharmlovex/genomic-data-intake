@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Two-pass deploy: base infrastructure, then images, then functions + API.
 #
-# Prerequisites: OCI CLI config (~/.oci/config), Terraform (or OpenTofu), Docker, and a
+# Prerequisites: OCI CLI config (~/.oci/config), Terraform >= 1.12 (the OCI state
+# backend is Terraform-only), infra/backend.hcl, Docker, and a
 # Docker login to OCIR:  docker login <region>.ocir.io -u '<namespace>/<username>'
 # (the password is an OCI "Auth Token" from your user profile).
 #
@@ -10,11 +11,12 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-TF=${TF:-$(command -v terraform || command -v tofu)}
+TF=${TF:-terraform}
 TAG=${TAG:-0.1.0}
 TFVARS=infra/terraform.tfvars
 
 [[ -f $TFVARS ]] || { echo "missing $TFVARS: copy infra/terraform.tfvars.example and fill it in" >&2; exit 1; }
+[[ -f infra/backend.hcl ]] || { echo "missing infra/backend.hcl: copy infra/backend.hcl.example and fill it in" >&2; exit 1; }
 
 # Set `name = "value"` in terraform.tfvars: replace an active line if there is one,
 # otherwise append. Commented-out lines are left alone. Rewrites in place so the
@@ -30,7 +32,7 @@ set_tfvar() { # name value
 }
 
 echo "==> 1/4 base infrastructure"
-$TF -chdir=infra init -input=false >/dev/null
+$TF -chdir=infra init -input=false -backend-config=backend.hcl >/dev/null
 $TF -chdir=infra apply -input=false -auto-approve
 
 PREFIX=$($TF -chdir=infra output -raw ocir_prefix)
