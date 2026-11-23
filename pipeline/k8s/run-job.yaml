@@ -1,0 +1,52 @@
+# Rendered and applied by scripts/run_pipeline_oke.sh (placeholders in ${...}).
+# The Nextflow head runs as a Kubernetes Job and launches task pods itself.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: variant-calling-${BATCH_SHORT}
+  namespace: genomics
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      serviceAccountName: nextflow
+      restartPolicy: Never
+      containers:
+        - name: nextflow
+          image: ${NXF_IMAGE}
+          workingDir: /workspace
+          command: ["nextflow"]
+          args:
+            - run
+            - ${PIPELINE_REPO}
+            - -r
+            - ${PIPELINE_REVISION}
+            - -main-script
+            - pipeline/main.nf
+            - -profile
+            - oke
+            - -resume
+            - --batch_id=${BATCH_ID}
+            - --samplesheet=s3://${BUCKET}/samplesheets/${BATCH_ID}.csv
+            - --input_prefix=s3://${BUCKET}/raw/${BATCH_ID}
+            - --reference=${REFERENCE}
+            - --outdir=s3://${BUCKET}/results/${BATCH_ID}
+            - --container=${TOOLS_IMAGE}
+          env:
+            - name: OCI_NAMESPACE
+              value: ${OCI_NAMESPACE}
+            - name: NXF_HOME
+              value: /workspace/.nextflow
+          envFrom:
+            - secretRef:
+                name: oci-s3-credentials # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+          volumeMounts:
+            - name: work
+              mountPath: /workspace
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+      volumes:
+        - name: work
+          persistentVolumeClaim:
+            claimName: nextflow-work

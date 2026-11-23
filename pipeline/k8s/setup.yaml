@@ -1,0 +1,51 @@
+# kubectl apply -f pipeline/k8s/setup.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: genomics
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nextflow
+  namespace: genomics
+---
+# Nextflow's head job creates one pod per task, so it needs to manage pods.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nextflow
+  namespace: genomics
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/status", "pods/log", "persistentvolumeclaims", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nextflow
+  namespace: genomics
+subjects:
+  - kind: ServiceAccount
+    name: nextflow
+    namespace: genomics
+roleRef:
+  kind: Role
+  name: nextflow
+  apiGroup: rbac.authorization.k8s.io
+---
+# Shared work directory on an OCI Block Volume.
+# ReadWriteOnce works because the node pool is a single node; for a multi-node pool,
+# use OCI File Storage (ReadWriteMany) instead. See README "Next steps".
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextflow-work
+  namespace: genomics
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: oci-bv
+  resources:
+    requests:
+      storage: 100Gi
