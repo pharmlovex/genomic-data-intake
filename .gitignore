@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+testdata/
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfvars
+infra/*.tfstate*
+.nextflow*
+work/
+results/
+*.egg-info/
+
+# Local notes with real endpoints and keys
+note.sh
