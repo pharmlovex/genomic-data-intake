@@ -1,0 +1,21 @@
+[project]
+name = "intake-core"
+version = "0.1.0"
+description = "Cloud-agnostic validation and state logic for the genome intake service"
+requires-python = ">=3.11"
+dependencies = [
+    "fdk>=0.1.130",
+    "oci>=2.192.0",
+    "pytest>=9.2.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["intake_core*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
