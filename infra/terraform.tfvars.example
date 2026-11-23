@@ -1,0 +1,16 @@
+# Copy to terraform.tfvars (git-ignored) and fill in.
+tenancy_ocid     = "ocid1.tenancy.oc1..aaaa"
+compartment_ocid = "ocid1.compartment.oc1..aaaa"
+region           = "uk-london-1"
+home_region      = "" # set if your tenancy's home region differs
+lab_email        = "you@example.com"
+api_key          = "change-me-to-a-long-random-string"
+
+# Written by scripts/deploy.sh after the images are pushed (validator_image_tag too).
+# Keep them: without them, a plain `terraform apply` removes the functions and API.
+# intake_api_image        = "uk-london-1.ocir.io/<namespace>/genome-intake/intake-api:0.1.0"
+# on_object_created_image = "uk-london-1.ocir.io/<namespace>/genome-intake/on-object-created:0.1.0"
+
+# Pipeline cluster (costs money while nodes run):
+enable_oke     = false
+oke_node_count = 1
