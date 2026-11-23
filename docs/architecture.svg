@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1220" viewBox="0 0 1600 1220" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/>
+    </marker>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/>
+    </marker>
+    <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .t  { font-size: 17px; font-weight: 700; fill: #0f172a; }
+      .s  { font-size: 13px; fill: #475569; }
+      .m  { font-size: 12.5px; fill: #334155; font-family: Menlo, Monaco, monospace; }
+      .l  { font-size: 12.5px; fill: #334155; paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round; }
+      .lb { font-size: 12.5px; font-weight: 700; paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round; }
+      .zone { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; fill: #64748b; }
+      .badge circle { stroke: #fff; stroke-width: 2; }
+      .badge text { font-size: 13px; font-weight: 700; fill: #fff; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1220" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="40" y="44" font-size="26" font-weight="700" fill="#0f172a">genome-intake-oci — architecture</text>
+  <text x="40" y="70" font-size="14" fill="#475569">Sequencing-data intake, validation and variant calling on Oracle Cloud Infrastructure. Control path (metadata) is kept separate from the data path (100 GB FASTQs).</text>
+
+  <g transform="translate(0,90)">
+
+    <!-- OCI boundary -->
+    <rect x="250" y="80" width="1310" height="880" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="272" y="106" class="zone">ORACLE CLOUD INFRASTRUCTURE · uk-london-1 · private bucket, encrypted at rest</text>
+
+    <!-- ========== Lab ========== -->
+    <rect x="40" y="410" width="170" height="130" rx="12" fill="#fff7ed" stroke="#9a3412" stroke-width="1.8"/>
+    <text x="125" y="448" text-anchor="middle" class="t">Lab / LIMS</text>
+    <text x="125" y="472" text-anchor="middle" class="s">sample sheet +</text>
+    <text x="125" y="490" text-anchor="middle" class="s">paired-end FASTQs</text>
+    <text x="125" y="514" text-anchor="middle" class="s">~50 × 100 GB / batch</text>
+
+    <!-- ========== Control path ========== -->
+    <rect x="300" y="130" width="190" height="80" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="395" y="164" text-anchor="middle" class="t">API Gateway</text>
+    <text x="395" y="186" text-anchor="middle" class="s">HTTPS · API key · rate limit</text>
+
+    <rect x="560" y="130" width="190" height="80" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="655" y="164" text-anchor="middle" class="t">intake-api</text>
+    <text x="655" y="186" text-anchor="middle" class="s">OCI Function</text>
+
+    <!-- NoSQL cylinder -->
+    <g>
+      <path d="M840,138 v64 a100,12 0 0 0 200,0 v-64" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8"/>
+      <ellipse cx="940" cy="138" rx="100" ry="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="940" y="176" text-anchor="middle" class="t">NoSQL Database</text>
+      <text x="940" y="198" text-anchor="middle" class="s">tables: batches, files</text>
+    </g>
+
+    <!-- ========== Object Storage ========== -->
+    <rect x="300" y="420" width="260" height="180" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8"/>
+    <text x="430" y="452" text-anchor="middle" class="t">Object Storage</text>
+    <text x="430" y="472" text-anchor="middle" class="s">one private bucket</text>
+    <text x="324" y="500" class="m">raw/<tspan class="s" dx="8">→ Archive after 90 d</tspan></text>
+    <text x="324" y="522" class="m">quarantine/<tspan class="s" dx="8">→ deleted 30 d</tspan></text>
+    <text x="324" y="544" class="m">reports/</text>
+    <text x="324" y="566" class="m">reference/</text>
+    <text x="324" y="588" class="m">results/<tspan class="s" dx="8">→ Archive 90 d</tspan></text>
+
+    <!-- ========== Events ========== -->
+    <rect x="640" y="470" width="180" height="80" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+    <text x="730" y="504" text-anchor="middle" class="t">Events rule</text>
+    <text x="730" y="526" text-anchor="middle" class="s">object created in raw/</text>
+
+    <rect x="860" y="470" width="200" height="80" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+    <text x="960" y="504" text-anchor="middle" class="t">on-object-created</text>
+    <text x="960" y="526" text-anchor="middle" class="s">Function · never reads data</text>
+
+    <!-- ========== Validator (stacked) ========== -->
+    <rect x="1126" y="284" width="220" height="130" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.2" opacity="0.6"/>
+    <rect x="1118" y="292" width="220" height="130" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.2" opacity="0.8"/>
+    <rect x="1110" y="300" width="220" height="130" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"/>
+    <text x="1220" y="330" text-anchor="middle" class="t">Validator jobs</text>
+    <text x="1220" y="350" text-anchor="middle" class="s">Container Instances</text>
+    <text x="1220" y="368" text-anchor="middle" class="s">one per sample, in parallel</text>
+    <text x="1220" y="392" text-anchor="middle" class="s">MD5 · FASTQ structure · bases/</text>
+    <text x="1220" y="410" text-anchor="middle" class="s">quals · R1/R2 count + names</text>
+
+    <!-- ========== Notifications ========== -->
+    <rect x="1370" y="130" width="160" height="80" rx="10" fill="#fdf2f8" stroke="#db2777" stroke-width="1.8"/>
+    <text x="1450" y="164" text-anchor="middle" class="t">Notifications</text>
+    <text x="1450" y="186" text-anchor="middle" class="s">e-mail topic</text>
+
+    <!-- ========== OKE ========== -->
+    <rect x="1110" y="690" width="420" height="140" rx="10" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.8"/>
+    <text x="1320" y="722" text-anchor="middle" class="t">Nextflow on OKE (Kubernetes)</text>
+    <text x="1320" y="742" text-anchor="middle" class="s">preemptible nodes · pinned tools image · trace/report/timeline</text>
+    <g font-size="13" font-weight="700" fill="#115e59" text-anchor="middle">
+      <rect x="1138" y="764" width="100" height="40" rx="8" fill="#ccfbf1" stroke="#0d9488"/>
+      <text x="1188" y="789">fastp</text>
+      <rect x="1270" y="764" width="100" height="40" rx="8" fill="#ccfbf1" stroke="#0d9488"/>
+      <text x="1320" y="789">bwa-mem2</text>
+      <rect x="1402" y="764" width="100" height="40" rx="8" fill="#ccfbf1" stroke="#0d9488"/>
+      <text x="1452" y="789">bcftools</text>
+    </g>
+    <path d="M1238,784 H1268" stroke="#0d9488" stroke-width="1.6" marker-end="url(#a)"/>
+    <path d="M1370,784 H1400" stroke="#0d9488" stroke-width="1.6" marker-end="url(#a)"/>
+
+    <!-- ========== Shared services strip ========== -->
+    <rect x="280" y="890" width="1250" height="46" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="300" y="918" class="s"><tspan font-weight="700" fill="#0f172a">Shared:</tspan>  Container Registry (OCIR) images  ·  IAM dynamic groups + resource principals (no keys in code, least privilege per bucket)  ·  OpenTofu / Terraform for all of it</text>
+
+    <!-- ================= ARROWS ================= -->
+    <!-- NoSQL -> OKE trigger line drawn first so labels' halos sit on top -->
+    <path d="M1040,190 H1080 V760 H1108" fill="none" stroke="#0d9488" stroke-width="2.2" stroke-dasharray="7 4" marker-end="url(#a)"/>
+
+    <!-- 1 Lab -> API GW (control) -->
+    <path d="M210,440 H255 V170 H298" fill="none" stroke="#2563eb" stroke-width="2.2" marker-end="url(#ab)"/>
+    <text x="262" y="236" class="lb" fill="#2563eb">create batch,</text>
+    <text x="262" y="252" class="lb" fill="#2563eb">sample sheet,</text>
+    <text x="262" y="268" class="lb" fill="#2563eb">get upload URLs</text>
+
+    <!-- API GW -> intake-api -->
+    <path d="M490,170 H558" fill="none" stroke="#2563eb" stroke-width="2.2" marker-end="url(#ab)"/>
+    <!-- intake-api -> NoSQL -->
+    <path d="M750,170 H838" fill="none" stroke="#2563eb" stroke-width="2.2" marker-end="url(#ab)"/>
+    <text x="794" y="160" text-anchor="middle" class="l">state</text>
+
+    <!-- 2 Lab -> Object Storage (data) -->
+    <path d="M210,510 H298" fill="none" stroke="#16a34a" stroke-width="3.2" marker-end="url(#ag)"/>
+    <text x="254" y="534" text-anchor="middle" class="lb" fill="#16a34a">PUT via</text>
+    <text x="254" y="550" text-anchor="middle" class="lb" fill="#16a34a">write-only</text>
+    <text x="254" y="566" text-anchor="middle" class="lb" fill="#16a34a">PAR URL</text>
+
+    <!-- 3 Object Storage -> Events -> on-object-created -->
+    <path d="M560,510 H638" fill="none" stroke="#ea580c" stroke-width="2.2" marker-end="url(#ao)"/>
+    <path d="M820,510 H858" fill="none" stroke="#ea580c" stroke-width="2.2" marker-end="url(#ao)"/>
+    <!-- on-object-created -> NoSQL -->
+    <path d="M960,470 V216" fill="none" stroke="#ea580c" stroke-width="2.2" marker-end="url(#ao)"/>
+    <text x="968" y="300" class="l">record arrival,</text>
+    <text x="968" y="316" class="l">reconcile vs sheet</text>
+
+    <!-- 4 on-object-created -> validator -->
+    <path d="M1030,470 V365 H1108" fill="none" stroke="#7c3aed" stroke-width="2.2" marker-end="url(#ap)"/>
+    <text x="1022" y="420" text-anchor="end" class="lb" fill="#7c3aed">launch when</text>
+    <text x="1022" y="436" text-anchor="end" class="lb" fill="#7c3aed">pair complete</text>
+    <!-- intake-api -> validator (sheet arrives last) -->
+    <path d="M655,210 V255 H1170 V298" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-dasharray="7 4" marker-end="url(#ap)"/>
+    <text x="700" y="248" class="lb" fill="#7c3aed">launch on sample-sheet arrival</text>
+
+    <!-- validator -> NoSQL -->
+    <path d="M1250,284 V150 H1042" fill="none" stroke="#7c3aed" stroke-width="2.2" marker-end="url(#ap)"/>
+    <text x="1146" y="142" text-anchor="middle" class="l">VALID / QUARANTINED</text>
+
+    <!-- validator <-> Object Storage -->
+    <path d="M1220,432 V640 H500 V602" fill="none" stroke="#16a34a" stroke-width="2.2" marker-start="url(#ag)" marker-end="url(#ag)"/>
+    <text x="760" y="632" class="l">stream R1+R2 · move bad files to quarantine/ · write reports/&lt;batch&gt;/report.json</text>
+
+    <!-- 5 validator -> Notifications -->
+    <path d="M1330,340 H1450 V212" fill="none" stroke="#db2777" stroke-width="2.2" marker-end="url(#a)"/>
+    <text x="1458" y="300" class="l">milestone</text>
+    <!-- Notifications -> Lab (email) -->
+    <path d="M1450,130 V50 H125 V408" fill="none" stroke="#db2777" stroke-width="2.2" stroke-dasharray="7 4" marker-end="url(#a)"/>
+    <text x="800" y="42" text-anchor="middle" class="lb" fill="#db2777">e-mail: READY_FOR_ANALYSIS or NEEDS_ATTENTION (what's quarantined, missing, unexpected)</text>
+
+    <!-- NoSQL -> OKE (manual trigger) -->
+    <text x="1072" y="680" text-anchor="end" class="lb" fill="#0d9488">batch READY_FOR_ANALYSIS</text>
+    <text x="1072" y="696" text-anchor="end" class="l">(run_pipeline_oke.sh, manual today)</text>
+
+    <!-- OKE <-> Object Storage (S3 API) -->
+    <path d="M1320,832 V862 H430 V602" fill="none" stroke="#0d9488" stroke-width="2.2" marker-start="url(#a)" marker-end="url(#a)"/>
+    <text x="760" y="856" class="l">S3 Compatibility API: read FASTQ + reference/, publish results/&lt;batch&gt;/vcf/</text>
+
+    <!-- Step badges -->
+    <g class="badge">
+      <circle cx="232" cy="420" r="13" fill="#2563eb"/><text x="232" y="425">1</text>
+      <circle cx="232" cy="490" r="13" fill="#16a34a"/><text x="232" y="495">2</text>
+      <circle cx="600" cy="490" r="13" fill="#ea580c"/><text x="600" y="495">3</text>
+      <circle cx="1030" cy="455" r="13" fill="#7c3aed"/><text x="1030" y="460">4</text>
+      <circle cx="1400" cy="320" r="13" fill="#db2777"/><text x="1400" y="325">5</text>
+      <circle cx="1100" cy="720" r="13" fill="#0d9488"/><text x="1100" y="725">6</text>
+    </g>
+  </g>
+
+  <!-- ========== State machines ========== -->
+  <g transform="translate(40,1080)" font-size="13">
+    <text x="0" y="0" font-size="15" font-weight="700" fill="#0f172a">State machines (core/intake_core/reconcile.py)</text>
+    <text x="0" y="34" font-weight="700" fill="#475569">file</text>
+    <text x="60" y="34" class="m">AWAITING_SAMPLESHEET → AWAITING_PAIR → VALIDATING → VALID | QUARANTINED</text>
+    <text x="60" y="56" class="m">AWAITING_SAMPLESHEET → UNEXPECTED   (not in the sheet)</text>
+    <text x="0" y="88" font-weight="700" fill="#475569">batch</text>
+    <text x="60" y="88" class="m">OPEN → SAMPLESHEET_RECEIVED → VALIDATING → READY_FOR_ANALYSIS | NEEDS_ATTENTION</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(1020,1080)" font-size="13" fill="#334155">
+    <text x="0" y="0" font-size="15" font-weight="700" fill="#0f172a">Legend</text>
+    <line x1="0" y1="30" x2="40" y2="30" stroke="#2563eb" stroke-width="2.2"/><text x="50" y="34">control path (KB of metadata)</text>
+    <line x1="0" y1="54" x2="40" y2="54" stroke="#16a34a" stroke-width="3.2"/><text x="50" y="58">data path (TB of FASTQ)</text>
+    <line x1="280" y1="30" x2="320" y2="30" stroke="#ea580c" stroke-width="2.2"/><text x="330" y="34">event</text>
+    <line x1="280" y1="54" x2="320" y2="54" stroke="#475569" stroke-width="2.2" stroke-dasharray="7 4"/><text x="330" y="58">conditional / async</text>
+    <text x="0" y="88" fill="#64748b">Numbered steps follow the README flow.</text>
+  </g>
+</svg>
