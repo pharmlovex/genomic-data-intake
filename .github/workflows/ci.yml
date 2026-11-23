@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest fdk oci==2.192.0
+      - run: pytest -q
+        working-directory: core
+
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+      - run: tofu fmt -check -recursive
+        working-directory: infra
+      - run: tofu init -backend=false && tofu validate
+        working-directory: infra
+
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f validator/Dockerfile -t validator:ci .
+      - run: docker build -f functions/Dockerfile --build-arg FUNC=intake-api -t intake-api:ci .
+      - run: docker build -f functions/Dockerfile --build-arg FUNC=on-object-created -t on-object-created:ci .
