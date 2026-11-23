@@ -138,3 +138,15 @@ variable "log_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "monthly_budget" {
+  description = "Monthly budget for the compartment, in the tenancy's billing currency."
+  type        = number
+  default     = 20
+}
+
+variable "alert_email" {
+  description = "Who gets budget alerts. Empty means lab_email."
+  type        = string
+  default     = ""
+}

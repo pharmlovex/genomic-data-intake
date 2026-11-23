@@ -6,6 +6,10 @@ home_region      = "" # set if your tenancy's home region differs
 lab_email        = "you@example.com"
 api_key          = "change-me-to-a-long-random-string"
 
+# Budget alerts (amount in your tenancy's billing currency):
+# monthly_budget = 20
+# alert_email    = "ops@example.com" # defaults to lab_email
+
 # Written by scripts/deploy.sh after the images are pushed (validator_image_tag too).
 # Keep them: without them, a plain `terraform apply` removes the functions and API.
 # intake_api_image        = "uk-london-1.ocir.io/<namespace>/genome-intake/intake-api:0.1.0"

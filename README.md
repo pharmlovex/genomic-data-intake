@@ -183,8 +183,12 @@ cold start, which `upload_batch.py` absorbs with a warm-up call.
 
 ## Cost
 
-Built to idle at roughly zero. Object Storage, NoSQL (Always Free tables), Functions, API
-Gateway, Events and Notifications are free or near-free at this volume. Container Instances
+Built to idle cheaply. Object Storage, Functions, API Gateway, Events, Notifications and
+Logging are free or near-free at this volume. The two NoSQL tables use small provisioned
+capacity (20 read / 20 write units each), a small fixed charge: Always Free tables are not
+offered in every region (not uk-london-1), and on-demand tables reserve more read units than
+a default tenancy limit allows. A monthly budget (`monthly_budget`, default 20 in the
+tenancy's currency) e-mails `alert_email` at 80% actual and 100% forecast spend. Container Instances
 bill per second only while a validation runs. OKE BASIC clusters have no control-plane fee;
 worker nodes bill while they exist, so scale `oke_node_count` to 0 or disable OKE between
 runs. Preemptible nodes are on by default, and Nextflow retries tasks if a node is reclaimed.
