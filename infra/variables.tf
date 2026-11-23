@@ -130,3 +130,11 @@ variable "oke_preemptible" {
   type        = bool
   default     = true
 }
+
+# ----- observability and cost -----
+
+variable "log_retention_days" {
+  description = "Days to keep function and API Gateway logs (30, 60, 90, ... 180)."
+  type        = number
+  default     = 30
+}

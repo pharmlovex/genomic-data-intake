@@ -162,6 +162,21 @@ nextflow run pipeline/main.nf -profile local --container pipeline-tools:local \
   --reference testdata/reference.fa --outdir results
 ```
 
+### Logs
+
+Function output (including tracebacks) and API Gateway access and execution logs go to the
+`genome-intake-logs` log group, kept for `log_retention_days` (30 by default). In the Console:
+Observability & Management > Logging > Log groups. From the CLI, the last 30 minutes:
+
+```bash
+oci logging-search search-logs \
+  --search-query 'search "<compartment_ocid>/<log_group_ocid>" | sort by datetime desc' \
+  --time-start "$(date -u -v-30M +%Y-%m-%dT%H:%M:%SZ)" --time-end "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+```
+
+A first request after idle shows up as a long invocation (tens of seconds): that is a function
+cold start, which `upload_batch.py` absorbs with a warm-up call.
+
 ### Clean up
 
 `terraform -chdir=infra destroy` (the state bucket is outside the stack and survives it). Or keep the cheap parts and set `enable_oke = false`.
